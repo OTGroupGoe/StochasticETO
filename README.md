@@ -7,7 +7,7 @@ This repo provides code to generate data and to plot figures in "Entropic transf
 
 * [Given_results_torus](./Given_results_torus/) and [Given_results_convection](./Given_results_convection/) contain pre-generated data from us to save your time.
 
-* [plot_figs_torus.ipynb](./plot_figs_torus.ipynb) and [plot_figs_convection.ipynb](./plot_figs_convection.ipynb) are code for plotting the figures 1-4 and 5-9 respectively.
+* [plot_figs_torus.ipynb](./plot_figs_torus.ipynb) and [plot_figs_convection.ipynb](./plot_figs_convection.ipynb) are code for plotting the figures 2-5 and 6-10 respectively.
 
 ## License (MIT License)
 Copyright (c) 2024, Hancheng Bi, Clément Sarrazin, Bernhard Schmitzer, Thilo Stier
