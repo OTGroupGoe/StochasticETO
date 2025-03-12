@@ -1,5 +1,5 @@
 ## Overview
-This repo provides code to generate data and to plot figures in "Entropic transfer operators for stochastic systems"
+This repo provides code to generate data and to plot figures in [Entropic transfer operators for stochastic systems](https://www.arxiv.org/abs/2503.05308)
 
 ## Getting started
 * [data_convection](./data_convection/) contains raw data from the lab, see section 3.3 in article for more details.
