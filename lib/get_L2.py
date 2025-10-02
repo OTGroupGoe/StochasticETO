@@ -161,9 +161,9 @@ def Sample_torus_L2(N,std,jump,jump_prob,ve,dim):
     pd.DataFrame(res).to_csv(fname)
 
 
-def get_extension(seed:int, NPts:int, std:float, jump:float, ve:float, res = 2000,jump_prob = .5, dim = 1):
+def get_extension(seed:int, NPts:int, std:float, jump:float, ve:float, res = 2000,jump_prob = .5, dim = 1,nev = 1):
     gen = np.random.Generator(np.random.MT19937(seed))
-    nev = 1
+    
     x,y = sample_Gau(gen, num = NPts ,std = std, shift = jump, dim = dim, shift_prob = jump_prob)
     res_x = SolveOT(np.ones(NPts)/NPts,np.ones(NPts)/NPts,cost(x,x),1e-6,ve,10,returnSolver = True)
     EK_x = res_x[1].toarray()
@@ -171,13 +171,16 @@ def get_extension(seed:int, NPts:int, std:float, jump:float, ve:float, res = 200
     EK_y = res_y[1].toarray()
     grid = res
     x_e = np.linspace(0,1,grid,endpoint=False)
-    EK_x *= NPts**2
-    EK_y *= NPts**2
+    EK_x *= NPts
+    EK_y *= NPts
     pot_y = 1/(np.sum(np.exp((-cost(x_e,y) + res_y[2].beta)/ve),axis=1))
     pot_y = pot_y.T
-    F_Y = pot_y[:,np.newaxis]*np.exp((-cost(x_e,y) + res_y[2].beta)/ve)*NPts
+    F_Y = pot_y[:,np.newaxis]*np.exp((-cost(x_e,y) + res_y[2].beta)/ve)   #*NPts
     B = EK_y@EK_x.T
     eigval,eigvet = np.linalg.eig(B)
+    ind = np.argsort(-np.abs(eigval))
+    eigval = eigval[ind]
+    eigvet = eigvet[:,ind]
     temp = eigvet[:,nev]
     temp *= np.abs(temp[0])/temp[0]
-    return x_e, (F_Y@EK_x.T)@np.real(temp/eigval[nev]), x, np.real(eigvet[:,nev])
+    return x_e, (F_Y@EK_x.T)@np.real(temp/eigval[nev]), x, np.real(eigvet[:,nev]), eigval
