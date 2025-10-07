@@ -4,7 +4,7 @@ This repo provides code to generate data and to plot figures in [Entropic transf
 ## Getting started
 * [playground](./playground.ipynb) contains a simple example that shows the main spirit of the paper, also one can use it to generate plots in figure 3.
 * [data_convection](./data_convection/) contains raw data from the lab, see section 3.5 in article for more details.
-* get_results_convection.ipynb](./get_results_convection.ipynb) is used to simulate/process data that are required in the convection data plots, by default the results are saved to folder [results_convection](./results_convection/) (which is currently empty).
+* [get_results_convection.ipynb](./get_results_convection.ipynb) is used to simulate/process data that are required in the convection data plots, by default the results are saved to folder [results_convection](./results_convection/) (which is currently empty).
 
 * [Given_results_torus](./Given_results_torus/) and [Given_results_convection](./Given_results_convection/) contain pre-generated data from us in case you do not have a cuda compatible gpu or to save your time.
 
