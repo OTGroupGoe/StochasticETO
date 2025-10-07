@@ -24,28 +24,44 @@ def cost(X,Y):
     return getDistSqrTorus(X,Y)
 
 
+
+
+
 def dens_gauss_shift(X, Y, shift, std, shift_prob=0.5):
     """
     X, Y same shape numpy arrays to describe point clouds
     shift = shift of second diagonal
-    std = standard deviation of both diagonals
-    shift_prob = probability of going to the se
+    std = standard deviation of the gaussian blur, can be a float or list of float
+    shift_prob = probability of shifting to the second diagonal
     """
     X = torch.tensor(X, device = dev)
     Y = torch.tensor(Y,device = dev)
-    o = torch.ceil(torch.tensor(4 * std).to(dev))
-    
+    if type(std) != torch.Tensor:
+        std = torch.tensor([std], device = dev)
+    if len(std.shape) == 0:
+        std = std.reshape(1)
+    o = torch.ceil(torch.tensor(4 * std.max().item()).to(dev))
+
     a = (Y - X).reshape((*X.shape, 1))
     z = torch.arange(-o, o+1, dtype=float, device = dev).reshape((*[1 for _ in X.shape], -1))
     
-    d0 = 1 / ((2 * torch.pi)**.5 * std) * torch.sum(torch.exp(-(a - z)**2 / (2 * std**2)), axis=-1)
-    d1 = 1 / ((2 * torch.pi)**.5 * std) * torch.sum(torch.exp(-(a - shift - z)**2 / (2 * std**2)), axis=-1)
-    
-    return shift_prob * d1 + (1 - shift_prob) * d0
-
+    d0 = 1 / ((2 * torch.pi)**.5 * std[:,None,None]) * torch.sum(torch.exp(-(a[None,...] - z[None,...])**2 / (2 * std[:,None,None,None]**2)), axis=-1)
+    d1 = 1 / ((2 * torch.pi)**.5 * std[:,None,None]) * torch.sum(torch.exp(-(a[None,...] - shift - z[None,...])**2 / (2 * std[:,None,None,None]**2)), axis=-1)
+    res = shift_prob * d1 + (1 - shift_prob) * d0
+    if res.shape[0]==1:
+        return res[0]
+    return res
 
 
 def sample_Gau(gen,num ,std, shift,dim = 1, shift_prob = 0.5):
+    """
+    draw random samples following the model described in section 3.3
+    num = Number of points 
+    std = standard deviation of the gaussian blur
+    shift = shift of second diagonal
+    dim = 1 by default, can be other positive integers for simulating the 'higher dimensions' case in section 3.3
+    shift_prob = probability of shifting to the second diagonal
+    """
     x = gen.random(num)
     shift_ind = gen.choice([0,1], p=[1-shift_prob,shift_prob],size = num)
     gau = gen.normal(0, std, size = num)
@@ -65,6 +81,12 @@ def sample_Gau(gen,num ,std, shift,dim = 1, shift_prob = 0.5):
 
 # N_sim = 100
 def get_torus_simulation(gen, Nlist, stdL, epsL, shift, shift_prob, dim, N_sim = 100, n_sim = 500):
+    """
+    return a pandas dataframe contains simulated results for different parameters, 
+    L2 means the L2 norm between t and t^\varepsilon_N, L2_true means the L2 norm between t^\varepsilon and t^\varepsilon_N.
+    Nlist : list of integers, number of points
+    stdL : list of floats, standard deviation of the gaussian blur
+    """
     df = []
     epsL = torch.sort(torch.tensor(epsL, device = dev), descending = True)[0]
     for N, std in tqdm(list(itertools.product(Nlist, stdL))):
@@ -121,19 +143,3 @@ def get_torus_simulation(gen, Nlist, stdL, epsL, shift, shift_prob, dim, N_sim =
                 df.append(pd.DataFrame({'N' : N, 'dim' : dim, 'std' : std, 'jump' : shift, 'jump_prob' : shift_prob , 've' : sig.item(), 'L2' : otpt[:,i], 'L2_true' : otpt2[:,i]}))
     return pd.concat(df)
 
-
-
-def get_Bais(std:float,jump:float,jump_prob:float,ve:float,Res = 500):
-    """
-    Return L2 distance between true density and blured true density.
-    std = standard deviation for distance between two species
-    jump = shift distance
-    jump_prob = shift probability
-    ve = sinkhorn regulariser
-    Res = resolution, default 500.    
-    """
-    x_e = y_e = np.linspace(0,1,Res,endpoint = False)
-    M2 = dens_gauss_shift(*np.meshgrid(y_e,x_e), shift = jump, std = (std**2 + ve)**.5, shift_prob=jump_prob)
-    M1 = dens_gauss_shift(*np.meshgrid(y_e,x_e), shift = jump, std =std, shift_prob=jump_prob)
-
-    return (torch.sum((M1-M2)**2))**.5/Res

@@ -2,12 +2,13 @@
 This repo provides code to generate data and to plot figures in [Entropic transfer operators for stochastic systems](https://www.arxiv.org/abs/2503.05308)
 
 ## Getting started
+* [playground](./playground.ipynb) contains a simple example that shows the main spirit of the paper, also one can use it to generate plots in figure 3.
 * [data_convection](./data_convection/) contains raw data from the lab, see section 3.3 in article for more details.
-* [get_results_torus.ipynb](./get_results_torus.ipynb) and [get_results_convection.ipynb](./get_results_convection.ipynb) are used to simulate/process data that are required in the plots, by default the results are saved to folder [results_torus](./results_torus/) and [results_convection](./results_convection/) (which are currently empty) respectively. [get_results_convection.ipynb](./get_results_convection.ipynb) is suggested to run on machine with GPU.
+* get_results_convection.ipynb](./get_results_convection.ipynb) is used to simulate/process data that are required in the convection data plots, by default the results are saved to folder [results_convection](./results_convection/) (which is currently empty).
 
-* [Given_results_torus](./Given_results_torus/) and [Given_results_convection](./Given_results_convection/) contain pre-generated data from us to save your time.
+* [Given_results_torus](./Given_results_torus/) and [Given_results_convection](./Given_results_convection/) contain pre-generated data from us in case you do not have a cuda compatible gpu or to save your time.
 
-* [plot_figs_torus.ipynb](./plot_figs_torus.ipynb) and [plot_figs_convection.ipynb](./plot_figs_convection.ipynb) are code for plotting the figures 2-5 and 6-10 respectively.
+* [torus.ipynb](./torus.ipynb) and [plot_figs_convection.ipynb](./plot_figs_convection.ipynb) are code for plotting the figures 4-8 and 9-13 respectively.
 
 ## License (MIT License)
 Copyright (c) 2024, Hancheng Bi, Clément Sarrazin, Bernhard Schmitzer, Thilo Stier
